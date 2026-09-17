@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LEAP University — Micro 101</title>
+<style>
+  :root{
+    --maroon:#8B1E2D;
+    --maroon-dk:#6E1724;
+    --gold:#C5A059;
+    --amber:#B5750C;
+    --ink:#1A1A1A;
+    --slate:#475569;
+    --cream:#F7F2EC;
+    --cream2:#EDE4D8;
+    --white:#FFFFFF;
+    --green:#2F6F4E;
+    --red:#B3261E;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family: Georgia, 'Times New Roman', serif;
+    background: var(--cream);
+    color: var(--ink);
+    min-height:100vh;
+  }
+  .sans{ font-family: -apple-system, Segoe UI, Calibri, Helvetica, Arial, sans-serif; }
+  #app{ max-width:880px; margin:0 auto; padding:0 20px 60px; }
+
+  /* Header */
+  .course-header{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:22px 0 16px; border-bottom:2px solid var(--maroon);
+    margin-bottom:0;
+  }
+  .brand{ display:flex; align-items:center; gap:12px; }
+  .crest{
+    width:40px; height:40px; border-radius:50%; flex:none; overflow:hidden;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .crest img{ width:100%; height:100%; object-fit:contain; }
+  .brand-text .eyebrow{ font-family: Georgia, serif; font-size:11px; letter-spacing:1.5px; color:var(--maroon); font-weight:bold; }
+  .brand-text .course-code{ font-size:13px; color:var(--slate); font-family: -apple-system,Segoe UI,Calibri,sans-serif;}
+  .duration-pill{
+    font-family: -apple-system,Segoe UI,Calibri,sans-serif; font-size:12.5px; color:var(--maroon-dk);
+    background:var(--cream2); border-radius:20px; padding:6px 14px; white-space:nowrap;
+  }
+
+  /* Progress bar */
+  .progress-track{ height:6px; background:var(--cream2); border-radius:4px; margin:18px 0 30px; overflow:hidden; }
+  .progress-fill{ height:100%; background:var(--maroon); border-radius:4px; transition:width .35s ease; }
+  .progress-label{ font-family:-apple-system,Segoe UI,Calibri,sans-serif; font-size:12px; color:var(--slate); margin-top:6px; text-align:right;}
+
+  /* Card */
+  .card{
+    background:var(--white); border:1px solid var(--cream2); border-radius:6px;
+    padding:44px 48px; min-height:420px; display:flex; flex-direction:column;
+    box-shadow: 0 2px 14px rgba(0,0,0,0.04);
+  }
+  @media (max-width:640px){ .card{ padding:28px 22px; } }
+
+  .kicker{ font-family: -apple-system,Segoe UI,Calibri,sans-serif; font-size:12.5px; letter-spacing:1px; color:var(--maroon); font-weight:700; margin-bottom:10px;}
+  h1.slide-title{ font-size:28px; margin:0 0 18px; line-height:1.25; }
+  h2.slide-title{ font-size:23px; margin:0 0 16px; line-height:1.3; }
+  .body-text{ font-family:-apple-system,Segoe UI,Calibri,sans-serif; font-size:16px; line-height:1.65; color:var(--slate); }
+  .body-text p{ margin:0 0 14px; }
+
+  ul.obj-list{ list-style:none; margin:0; padding:0; font-family:-apple-system,Segoe UI,Calibri,sans-serif;}
+  ul.obj-list li{ position:relative; padding-left:28px; margin-bottom:12px; font-size:15.5px; color:var(--ink); line-height:1.5;}
+  ul.obj-list li:before{ content:"\2713"; position:absolute; left:0; top:1px; color:var(--maroon); font-weight:bold;}
+
+  .points{ list-style:none; margin:0; padding:0; font-family:-apple-system,Segoe UI,Calibri,sans-serif;}
+  .points li{ position:relative; padding-left:22px; margin-bottom:14px; font-size:15.5px; color:var(--ink); line-height:1.55;}
+  .points li:before{ content:""; position:absolute; left:0; top:8px; width:7px; height:7px; background:var(--gold); border-radius:50%;}
+
+  .callout{ background:var(--cream); border-left:3px solid var(--gold); padding:14px 18px; margin:18px 0; font-family:-apple-system,Segoe UI,Calibri,sans-serif; font-size:14.5px; color:var(--maroon-dk); border-radius:0 4px 4px 0;}
+
+  .module-tag{ display:inline-block; font-family:-apple-system,Segoe UI,Calibri,sans-serif; font-size:11.5px; font-weight:700; letter-spacing:0.5px; color:var(--white); background:var(--maroon); padding:4px 10px; border-radius:3px; margin-bottom:14px;}
+
+  /* Knowledge check / assessment */
+  .kc-badge{ display:inline-flex; align-items:center; gap:8px; font-family:-apple-system,Segoe UI,Calibri,sans-serif; font-size:11.5px; font-weight:700; letter-spacing:0.5px; color:var(--maroon-dk); background:var(--cream2); padding:5px 12px; border-radius:3px; margin-bottom:16px;}
+  .kc-question{ font-family:-apple-system,Segoe UI,Calibri,sans-serif; font-size:17px; font-weight:600; color:var(--ink); margin-bottom:20px; line-height:1.5;}
+  .options{ display:flex; flex-direction:column; gap:10px; margin-bottom:20px;}
+  .option{
+    font-family:-apple-system,Segoe UI,Calibri,sans-serif; font-size:15px; text-align:left;
+    padding:13px 16px; border:1.5px solid var(--cream2); border-radius:6px; background:var(--white);
+    cursor:pointer; transition: border-color .15s, background .15s; color:var(--ink);
+    display:flex; align-items:center; gap:12px;
+  }
+  .option:hover{ border-color:var(--gold); background:var(--cream); }
+  .option .letter{ width:22px; height:22px; border-radius:50%; border:1.5px solid var(--slate); display:flex; align-items:center; justify-content:center; font-size:12px; flex:none; color:var(--slate); }
+  .option.selected{ border-color:var(--maroon); background:var(--cream); }
+  .option.selected .letter{ border-color:var(--maroon); background:var(--maroon); color:var(--white); }
+  .option.correct{ border-color:var(--green); background:#EAF4EE; }
+  .option.correct .letter{ background:var(--green); border-color:var(--green); color:var(--white); }
+  .option.incorrect{ border-color:var(--red); background:#FBEAE9; }
+  .option.incorrect .letter{ background:var(--red); border-color:var(--red); color:var(--white); }
+  .option:disabled, .option.locked{ cursor:default; }
+
+  .feedback{ font-family:-apple-system,Segoe UI,Calibri,sans-serif; font-size:14.5px; padding:14px 16px; border-radius:6px; margin-bottom:8px; line-height:1.55; display:none;}
+  .feedback.show{ display:block; }
+  .feedback.correct-fb{ background:#EAF4EE; color:#20573B; border:1px solid #BEE0CC; }
+  .feedback.incorrect-fb{ background:#FBEAE9; color:#8A2A24; border:1px solid #F0C4C1; }
+  .feedback b{ display:block; margin-bottom:3px; }
+
+  /* Footer nav */
+  .card-footer{ margin-top:auto; padding-top:28px; display:flex; align-items:center; justify-content:space-between; }
+  .btn{
+    font-family:-apple-system,Segoe UI,Calibri,sans-serif; font-size:14.5px; font-weight:600;
+    padding:12px 26px; border-radius:5px; border:none; cursor:pointer; transition: opacity .15s, transform .1s;
+  }
+  .btn:active{ transform: translateY(1px); }
+  .btn-primary{ background:var(--maroon); color:var(--white); }
+  .btn-primary:hover{ background:var(--maroon-dk); }
+  .btn-primary:disabled{ background:#C9BCB0; cursor:not-allowed; }
+  .btn-ghost{ background:transparent; color:var(--slate); padding:12px 8px; }
+  .btn-ghost:hover{ color:var(--ink); }
+  .btn-ghost:disabled{ visibility:hidden; }
+
+  /* Landing / result / summary */
+  .landing-icon, .complete-icon{ width:64px; height:64px; border-radius:50%; border:2px solid var(--maroon); display:flex; align-items:center; justify-content:center; font-size:26px; color:var(--maroon); margin-bottom:22px;}
+  .complete-icon{ border-color:var(--green); color:var(--green); }
+  .meta-row{ display:flex; gap:26px; flex-wrap:wrap; margin:22px 0 6px; font-family:-apple-system,Segoe UI,Calibri,sans-serif;}
+  .meta-item .meta-label{ font-size:11px; letter-spacing:0.5px; color:var(--slate); font-weight:700; margin-bottom:3px;}
+  .meta-item .meta-value{ font-size:14.5px; color:var(--ink); }
+
+  .score-box{ display:flex; gap:36px; margin:22px 0; flex-wrap:wrap; }
+  .score-num{ font-family:Georgia,serif; font-size:40px; color:var(--maroon); font-weight:bold; }
+  .score-label{ font-family:-apple-system,Segoe UI,Calibri,sans-serif; font-size:13px; color:var(--slate); }
+
+  .assess-note{ font-family:-apple-system,Segoe UI,Calibri,sans-serif; font-size:14px; color:var(--slate); background:var(--cream); border-radius:6px; padding:12px 16px; margin:4px 0 20px;}
+
+  /* Illustrations (inline SVG, no external requests) */
+  .hero-fig{ margin:-44px -48px 22px; background:linear-gradient(135deg,#F5EAE3,#EDE0D2); display:flex; align-items:center; justify-content:center; }
+  .hero-fig svg{ width:100%; height:230px; display:block; }
+  @media (max-width:640px){ .hero-fig{ margin:-28px -22px 18px; } .hero-fig svg{ height:170px; } }
+  .module-fig{ margin:6px 0 20px; border-radius:8px; overflow:hidden; background:#F7F2EC; display:flex; align-items:center; justify-content:center; }
+  .module-fig svg{ width:100%; height:190px; display:block; }
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+const COURSE = {"heroSvg": "<svg viewBox=\"0 0 600 300\" xmlns=\"http://www.w3.org/2000/svg\"><g transform=\"translate(300,150)\">\n    <circle cx=\"-180\" cy=\"-70\" r=\"70\" fill=\"#C5A059\" opacity=\"0.12\"/>\n    <circle cx=\"200\" cy=\"60\" r=\"90\" fill=\"#8B1E2D\" opacity=\"0.08\"/>\n    <circle cx=\"150\" cy=\"-90\" r=\"34\" fill=\"#C5A059\" opacity=\"0.18\"/>\n    \n<rect x=\"-30\" y=\"80\" width=\"140\" height=\"14\" rx=\"4\" fill=\"#475569\"/>\n<rect x=\"15\" y=\"20\" width=\"50\" height=\"14\" rx=\"4\" fill=\"#475569\"/>\n<rect x=\"30\" y=\"-60\" width=\"20\" height=\"90\" rx=\"6\" fill=\"#475569\"/>\n<path d=\"M 40 -60 C 90 -60 95 10 55 20\" fill=\"none\" stroke=\"#475569\" stroke-width=\"16\" stroke-linecap=\"round\"/>\n<rect x=\"20\" y=\"-95\" width=\"40\" height=\"40\" rx=\"8\" fill=\"#C5A059\"/>\n<circle cx=\"40\" cy=\"-95\" r=\"10\" fill=\"#F7F2EC\"/>\n<circle cx=\"-110\" cy=\"70\" r=\"46\" fill=\"#F7F2EC\" stroke=\"#475569\" stroke-width=\"6\"/>\n<circle cx=\"-110\" cy=\"70\" r=\"46\" fill=\"none\" stroke=\"#C5A059\" stroke-width=\"3\" opacity=\"0.7\"/>\n<circle cx=\"-122\" cy=\"60\" r=\"6\" fill=\"#8B1E2D\"/>\n<circle cx=\"-100\" cy=\"78\" r=\"5\" fill=\"#C5A059\"/>\n<circle cx=\"-115\" cy=\"85\" r=\"4\" fill=\"#2F6F4E\"/>\n<circle cx=\"-95\" cy=\"55\" r=\"4\" fill=\"#8B1E2D\" opacity=\"0.7\"/>\n</g></svg>", "courseCode": "Micro 101", "courseTitle": "Food Microbiology Foundations", "college": "COLLEGE OF FOOD SAFETY", "employeeType": "Salary (branches by product track)", "format": "Workday, self-paced", "prerequisites": "FS 102 complete", "estDuration": "12\u201315 min", "leadsTo": "FS 201 \u2014 Root Cause Analysis Fundamentals", "description": "Micro 101 gives salaried food safety and QA employees a working knowledge of the microorganisms that matter on the plant floor \u2014 the difference between pathogens and spoilage organisms, the major foodborne pathogens relevant to poultry, and how the plant tests for them.", "objectives": ["Describe basic bacterial characteristics (shape, gram stain, preferred environment).", "Distinguish a pathogen from a spoilage organism.", "Identify the major foodborne pathogens relevant to poultry products, their typical outbreak sources, and which ones carry legal adulterant status.", "Describe common food testing methods used at the plant (direct plating, lateral flow, ELISA, PCR).", "Demonstrate a basic coliform swabbing technique."], "modules": [{"title": "Bacteria Basics", "points": ["Bacteria are described by shape, gram stain, and preferred growth environment.", "These characteristics matter because they drive how we detect and control bacteria on the plant floor.", "Gram stain (positive vs. negative) affects which sanitizers and processes are most effective against a given organism."], "kcs": [{"question": "Which of these is a basic bacterial characteristic used to help identify and control it?", "options": ["Gram stain", "Favorite football team", "Shift schedule", "Employee ID number"], "correctIndex": 0, "explanation": " Gram stain, along with shape and preferred growth environment, is a basic bacterial characteristic that informs detection and control."}, {"question": "Preferred growth environment is a bacterial characteristic that helps...", "options": ["Predict where and how bacteria grow, informing controls", "Decide employee schedules", "Set product pricing", "Choose packaging colors"], "correctIndex": 0, "explanation": " Knowing an organism's preferred environment \u2014 temperature, moisture, oxygen level \u2014 helps target where controls matter most."}, {"question": "Bacterial shape is typically described using terms like...", "options": ["Rod (bacillus) or sphere (coccus)", "Square or triangle", "Large or small only", "Fast or slow"], "correctIndex": 0, "explanation": " Shape is one of the basic descriptors \u2014 rod-shaped (bacillus) and spherical (coccus) are common categories."}]}, {"title": "Pathogens vs. Spoilage Organisms", "points": ["Pathogens cause illness; spoilage organisms cause quality defects, not necessarily illness.", "Adulterants are organisms that render product legally unfit regardless of illness risk.", "A product can look, smell, and taste fine and still carry a pathogen \u2014 which is exactly why testing matters more than a visual check."], "kcs": [{"question": "What's the key difference between a pathogen and a spoilage organism?", "options": ["Pathogens cause illness; spoilage organisms cause quality defects", "They're the same thing", "Spoilage organisms are always more dangerous", "Pathogens only affect raw product"], "correctIndex": 0, "explanation": " Pathogens cause illness, while spoilage organisms cause quality defects rather than illness. Some organisms are also adulterants, which make product legally unfit regardless of illness risk."}, {"question": "An adulterant is best defined as...", "options": ["An organism that renders product legally unfit, regardless of illness risk", "Any organism found on product", "A synonym for pathogen", "A synonym for spoilage organism"], "correctIndex": 0, "explanation": " \"Adulterant\" is a specific legal status \u2014 not every pathogen carries it, and it doesn't require proven illness risk to apply."}, {"question": "Spoilage organisms primarily cause...", "options": ["Quality defects, not necessarily illness", "Serious illness in all cases", "No detectable effect on product", "Only cosmetic changes to packaging"], "correctIndex": 0, "explanation": " Spoilage organisms affect quality \u2014 taste, smell, texture \u2014 without necessarily posing an illness risk the way a pathogen does."}]}, {"title": "Major Foodborne Pathogens", "points": ["Key pathogens covered: Listeria monocytogenes, Salmonella, Campylobacter, E. coli O157:H7, Staphylococcus aureus, and Clostridium botulinum \u2014 each with its own susceptible populations and typical outbreak sources.", "Not every pathogen of concern is legally an \"adulterant.\" Listeria monocytogenes is an adulterant in ready-to-eat product, and E. coli O157:H7 is an adulterant in raw non-intact beef.", "Important distinction: Salmonella and Campylobacter are the pathogens of greatest public-health concern in raw poultry, but under current USDA-FSIS policy, Salmonella is NOT classified as an adulterant in raw poultry products.", "Slaughter/Raw track: extra emphasis on E. coli O157:H7 as a raw-product adulterant standard, and on Salmonella/Campylobacter monitoring and control given their significance to raw poultry."], "callout": "Common mix-up: \"adulterant\" and \"pathogen of concern\" aren't the same thing. Know which pathogens carry adulterant status for the products you work with \u2014 and which don't.", "kcs": [{"question": "Under current USDA-FSIS policy, is Salmonella classified as an adulterant in raw poultry?", "options": ["No \u2014 Salmonella is a major pathogen of concern in raw poultry, but it is not classified as an adulterant under current policy", "Yes, Salmonella is an adulterant in all raw poultry product", "Only in organic poultry", "Only during a recall"], "correctIndex": 0, "explanation": " Unlike E. coli O157:H7 in raw non-intact beef, Salmonella is not currently classified as an adulterant in raw poultry \u2014 even though it remains a top pathogen of concern and a focus of ongoing monitoring."}, {"question": "Which pathogen IS classified as an adulterant in raw non-intact beef?", "options": ["E. coli O157:H7", "Salmonella", "Campylobacter", "Staphylococcus aureus"], "correctIndex": 0, "explanation": " E. coli O157:H7 is legally an adulterant in raw non-intact beef \u2014 a stricter status than the \"pathogen of concern\" designation that applies to Salmonella in raw poultry."}]}, {"title": "Testing Methods & Hands-On Activity", "svg": "<svg viewBox=\"0 0 400 220\" xmlns=\"http://www.w3.org/2000/svg\"><g transform=\"translate(200,110)\"><circle cx=\"0\" cy=\"0\" r=\"88\" fill=\"#EDE4D8\" opacity=\"0.6\"/>\n<circle cx=\"-20\" cy=\"0\" r=\"70\" fill=\"#F7F2EC\" stroke=\"#475569\" stroke-width=\"6\"/>\n<circle cx=\"-20\" cy=\"0\" r=\"70\" fill=\"none\" stroke=\"#C5A059\" stroke-width=\"3\" opacity=\"0.6\"/>\n<circle cx=\"-45\" cy=\"-15\" r=\"8\" fill=\"#8B1E2D\"/>\n<circle cx=\"-10\" cy=\"10\" r=\"7\" fill=\"#C5A059\"/>\n<circle cx=\"-30\" cy=\"25\" r=\"6\" fill=\"#2F6F4E\"/>\n<circle cx=\"5\" cy=\"-20\" r=\"6\" fill=\"#8B1E2D\" opacity=\"0.7\"/>\n<circle cx=\"-55\" cy=\"15\" r=\"5\" fill=\"#C5A059\" opacity=\"0.8\"/>\n<circle cx=\"15\" cy=\"15\" r=\"5\" fill=\"#2F6F4E\" opacity=\"0.7\"/>\n<rect x=\"85\" y=\"-70\" width=\"26\" height=\"90\" rx=\"10\" fill=\"#F7F2EC\" stroke=\"#475569\" stroke-width=\"5\"/>\n<path d=\"M 87 10 a 11 11 0 0 0 22 0 Z\" fill=\"#C5A059\"/>\n<rect x=\"83\" y=\"-78\" width=\"30\" height=\"10\" rx=\"3\" fill=\"#475569\"/>\n</g></svg>", "points": ["The plant uses several testing methods depending on the need: direct plating, lateral flow, ELISA, PCR, and identification/sequencing.", "This module includes a hands-on coliform-swabbing activity to practice technique.", "Faster methods like lateral flow trade some sensitivity for speed; PCR and sequencing take longer but give more definitive answers."], "kcs": [{"question": "This module's hands-on activity has you practice which technique?", "options": ["Coliform swabbing", "Log-reduction math", "Thermometer calibration", "Audit checklist review"], "correctIndex": 0, "explanation": " The hands-on activity in Micro 101 is a coliform-swabbing exercise, giving you practice with a technique used in day-to-day testing."}, {"question": "Which testing method identifies organisms using genetic material?", "options": ["PCR", "Direct plating", "Lateral flow", "ELISA"], "correctIndex": 0, "explanation": " PCR identifies organisms based on their genetic material, offering a more definitive \u2014 if slower \u2014 answer than a rapid screening method like lateral flow."}]}], "assessmentBank": [{"question": "Which characteristic helps identify and control bacteria?", "options": ["Gram stain", "Favorite football team", "Shift schedule", "Employee ID number"], "correctIndex": 0}, {"question": "What's the key difference between a pathogen and a spoilage organism?", "options": ["Pathogens cause illness; spoilage organisms cause quality defects", "They're identical", "Spoilage organisms are always more dangerous", "Pathogens only affect raw product"], "correctIndex": 0}, {"question": "Under current USDA-FSIS policy, is Salmonella an adulterant in raw poultry?", "options": ["No \u2014 it's a major pathogen of concern, but it is not classified as an adulterant", "Yes, always", "Only in organic poultry", "Only during a recall"], "correctIndex": 0}, {"question": "Which pathogen IS classified as an adulterant in raw non-intact beef?", "options": ["E. coli O157:H7", "Salmonella", "Campylobacter", "Staphylococcus aureus"], "correctIndex": 0}, {"question": "In which type of product is Listeria monocytogenes considered an adulterant?", "options": ["Ready-to-eat product", "Raw poultry", "Raw non-intact beef", "Live animals"], "correctIndex": 0}, {"question": "Which pathogens are of greatest public-health concern in raw poultry?", "options": ["Salmonella and Campylobacter", "E. coli O157:H7 only", "C. botulinum only", "None \u2014 raw poultry has no pathogens of concern"], "correctIndex": 0}, {"question": "What is an adulterant?", "options": ["An organism that renders product legally unfit, independent of illness risk", "Any bacteria found on product", "A synonym for spoilage organism", "A cleaning chemical"], "correctIndex": 0}, {"question": "Which testing method uses antibody-based rapid detection?", "options": ["Lateral flow", "Direct plating", "PCR", "Sequencing"], "correctIndex": 0}, {"question": "Which of these describes a bacterium's shape?", "options": ["Rod (bacillus) or sphere (coccus)", "Square or triangle", "Large or small only", "Fast or slow"], "correctIndex": 0}, {"question": "Which testing method identifies organisms based on their genetic material?", "options": ["PCR", "Direct plating", "Lateral flow", "ELISA"], "correctIndex": 0}]};
+
+// ---------- utilities ----------
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]] = [a[j],a[i]];
+  }
+  return a;
+}
+function shuffleOptions(q){
+  const idx = shuffle(q.options.map((_,i)=>i));
+  return { question:q.question, options: idx.map(i=>q.options[i]), correctIndex: idx.indexOf(q.correctIndex), explanation:q.explanation || '' };
+}
+function prepareBank(bank){
+  const order = shuffle(bank.map((_,i)=>i));
+  return order.map(i => shuffleOptions(bank[i]));
+}
+
+// shuffle each module's KC options once at load
+COURSE.modules.forEach(m => { m.kcs = m.kcs.map(shuffleOptions); });
+const PRE_BANK = prepareBank(COURSE.assessmentBank);
+const POST_BANK = prepareBank(COURSE.assessmentBank);
+const pretestAnswers = new Array(PRE_BANK.length).fill(null);
+const posttestAnswers = new Array(POST_BANK.length).fill(null);
+const kcState = {}; // "mi-ki" -> {selected, submitted, correctFirstTry}
+
+// ---------- slide sequence ----------
+function buildSlides(course){
+  const slides = [{type:'landing'}];
+  slides.push({type:'pretestIntro'});
+  for(let i=0;i<PRE_BANK.length;i++) slides.push({type:'pretest', qIndex:i});
+  slides.push({type:'pretestResult'});
+  course.modules.forEach((m, mi) => {
+    slides.push({type:'content', moduleIndex:mi});
+    m.kcs.forEach((_, ki) => slides.push({type:'kc', moduleIndex:mi, kcIndex:ki}));
+  });
+  slides.push({type:'posttestIntro'});
+  for(let i=0;i<POST_BANK.length;i++) slides.push({type:'posttest', qIndex:i});
+  slides.push({type:'summary'});
+  return slides;
+}
+const SLIDES = buildSlides(COURSE);
+let current = 0;
+
+function el(tag, cls, html){
+  const e = document.createElement(tag);
+  if(cls) e.className = cls;
+  if(html !== undefined) e.innerHTML = html;
+  return e;
+}
+
+function renderHeader(container){
+  const header = el('div','course-header');
+  const brand = el('div','brand');
+  brand.appendChild((()=>{ const c=document.createElement('div'); c.className='crest'; c.innerHTML = '<img src="data:image/png;base64,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" alt="LEAP University crest">'; return c; })());
+  const bt = el('div','brand-text');
+  bt.appendChild(el('div','eyebrow', 'L.E.A.P. UNIVERSITY'));
+  bt.appendChild(el('div','course-code', COURSE.courseCode + ' — ' + COURSE.courseTitle));
+  brand.appendChild(bt);
+  header.appendChild(brand);
+  header.appendChild(el('div','duration-pill sans', '\u23F1 ' + COURSE.estDuration));
+  container.appendChild(header);
+
+  const total = SLIDES.length;
+  const pct = Math.round((current)/(total-1)*100);
+  const trackWrap = el('div');
+  const track = el('div','progress-track');
+  const fill = el('div','progress-fill'); fill.style.width = pct+'%';
+  track.appendChild(fill);
+  trackWrap.appendChild(track);
+  trackWrap.appendChild(el('div','progress-label sans', 'Step ' + (current+1) + ' of ' + total));
+  container.appendChild(trackWrap);
+}
+
+function goTo(idx){
+  current = Math.max(0, Math.min(SLIDES.length-1, idx));
+  render();
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function render(){
+  const app = document.getElementById('app');
+  app.innerHTML = '';
+  renderHeader(app);
+  const card = el('div','card');
+  const slide = SLIDES[current];
+  if(slide.type === 'landing') renderLanding(card);
+  else if(slide.type === 'pretestIntro') renderAssessIntro(card, 'pretest');
+  else if(slide.type === 'pretest') renderAssessQuestion(card, 'pretest', slide.qIndex);
+  else if(slide.type === 'pretestResult') renderPretestResult(card);
+  else if(slide.type === 'content') renderContent(card, slide.moduleIndex);
+  else if(slide.type === 'kc') renderKC(card, slide.moduleIndex, slide.kcIndex);
+  else if(slide.type === 'posttestIntro') renderAssessIntro(card, 'posttest');
+  else if(slide.type === 'posttest') renderAssessQuestion(card, 'posttest', slide.qIndex);
+  else if(slide.type === 'summary') renderSummary(card);
+  app.appendChild(card);
+}
+
+function footer(showBack, nextLabel, onNext, onBack, nextDisabled){
+  const wrap = el('div','card-footer');
+  const back = el('button','btn btn-ghost sans','\u2190 Back');
+  if(showBack){ back.addEventListener('click', onBack || (()=>goTo(current-1))); }
+  else { back.disabled = true; }
+  wrap.appendChild(back);
+  const next = el('button','btn btn-primary sans', nextLabel);
+  if(nextDisabled) next.disabled = true;
+  next.addEventListener('click', onNext);
+  wrap.appendChild(next);
+  return wrap;
+}
+
+// ---------- LANDING ----------
+function renderLanding(card){
+  if(COURSE.heroSvg){
+    const fig = el('div','hero-fig', COURSE.heroSvg);
+    card.appendChild(fig);
+  } else {
+    card.appendChild(el('div','landing-icon', '\u{1F393}'));
+  }
+  card.appendChild(el('div','kicker', COURSE.college));
+  card.appendChild(el('h1','slide-title', COURSE.courseTitle));
+  const body = el('div','body-text');
+  body.appendChild(el('p', null, COURSE.description));
+  card.appendChild(body);
+
+  const meta = el('div','meta-row');
+  const metaData = [
+    ['Course Number', COURSE.courseCode],
+    ['Employee Type', COURSE.employeeType],
+    ['Format', COURSE.format],
+    ['Prerequisites', COURSE.prerequisites],
+    ['Estimated Duration', COURSE.estDuration]
+  ];
+  metaData.forEach(([label,val])=>{
+    const item = el('div','meta-item');
+    item.appendChild(el('div','meta-label', label.toUpperCase()));
+    item.appendChild(el('div','meta-value', val));
+    meta.appendChild(item);
+  });
+  card.appendChild(meta);
+
+  card.appendChild(el('div','assess-note', '\u{1F4CB} This course includes a 10-question pre-assessment, ' + totalKCCount() + ' embedded knowledge checks, and a 10-question post-assessment covering the same material, shuffled.'));
+
+  const objWrap = el('div');
+  objWrap.appendChild(el('div','kicker', 'BY THE END OF THIS COURSE, YOU WILL BE ABLE TO:'));
+  const ul = el('ul','obj-list');
+  COURSE.objectives.forEach(o => ul.appendChild(el('li', null, o)));
+  objWrap.appendChild(ul);
+  card.appendChild(objWrap);
+
+  card.appendChild(footer(false, 'Start Course', ()=>goTo(current+1)));
+}
+function totalKCCount(){
+  return COURSE.modules.reduce((n,m)=>n+m.kcs.length,0);
+}
+
+// ---------- ASSESSMENT INTRO ----------
+function renderAssessIntro(card, phase){
+  const isPre = phase === 'pretest';
+  card.appendChild(el('div','kicker', isPre ? 'BEFORE WE BEGIN' : 'BEFORE YOU FINISH'));
+  card.appendChild(el('h1','slide-title', isPre ? 'Quick pre-assessment' : 'Post-assessment'));
+  const body = el('div','body-text');
+  body.appendChild(el('p', null, isPre
+    ? "10 questions, drawn from everything this course covers. Don't worry about getting them all right — this is just your starting point, and you'll see these ideas again in the modules ahead."
+    : "Same 10-question bank as your pre-assessment, shuffled. This measures how much moved since you started — answer based on what you just learned."));
+  card.appendChild(body);
+  card.appendChild(footer(true, isPre ? 'Begin Pre-Assessment' : 'Begin Post-Assessment', ()=>goTo(current+1)));
+}
+
+// ---------- ASSESSMENT QUESTION ----------
+function renderAssessQuestion(card, phase, qIndex){
+  const isPre = phase === 'pretest';
+  const bank = isPre ? PRE_BANK : POST_BANK;
+  const answers = isPre ? pretestAnswers : posttestAnswers;
+  const q = bank[qIndex];
+
+  card.appendChild(el('div','kc-badge sans', (isPre ? 'PRE-ASSESSMENT' : 'POST-ASSESSMENT') + ' \u2022 QUESTION ' + (qIndex+1) + ' OF ' + bank.length));
+  card.appendChild(el('div','kc-question', q.question));
+
+  const optWrap = el('div','options');
+  q.options.forEach((opt, oi) => {
+    const btn = el('button','option sans');
+    btn.type = 'button';
+    const letter = el('span','letter', String.fromCharCode(65+oi));
+    btn.appendChild(letter);
+    btn.appendChild(el('span', null, opt));
+    if(answers[qIndex] === oi) btn.classList.add('selected');
+    btn.addEventListener('click', ()=>{ answers[qIndex] = oi; render(); });
+    optWrap.appendChild(btn);
+  });
+  card.appendChild(optWrap);
+
+  const isLast = qIndex === bank.length - 1;
+  const nextLabel = isLast ? (isPre ? 'Finish Pre-Assessment \u2192' : 'Finish Post-Assessment \u2192') : 'Next \u2192';
+  card.appendChild(footer(true, nextLabel, ()=>goTo(current+1), ()=>goTo(current-1), answers[qIndex] === null));
+}
+
+function renderPretestResult(card){
+  const score = pretestAnswers.reduce((n,a,i)=> n + (a === PRE_BANK[i].correctIndex ? 1 : 0), 0);
+  card.appendChild(el('div','kicker', 'BASELINE RECORDED'));
+  card.appendChild(el('h1','slide-title', 'Pre-assessment complete'));
+  const scoreBox = el('div','score-box');
+  const s1 = el('div');
+  s1.appendChild(el('div','score-num', score + '/' + PRE_BANK.length));
+  s1.appendChild(el('div','score-label sans','Pre-assessment score'));
+  scoreBox.appendChild(s1);
+  card.appendChild(scoreBox);
+  const body = el('div','body-text');
+  body.appendChild(el('p', null, "This is just your starting point — let's build from here. You'll see a post-assessment at the end so you and your trainer can see what moved."));
+  card.appendChild(body);
+  card.appendChild(footer(true, 'Start Module 1 \u2192', ()=>goTo(current+1)));
+}
+
+// ---------- CONTENT ----------
+function renderContent(card, mi){
+  const m = COURSE.modules[mi];
+  card.appendChild(el('div','module-tag', 'MODULE ' + (mi+1) + ' OF ' + COURSE.modules.length));
+  card.appendChild(el('h2','slide-title', m.title));
+  const body = el('div','body-text');
+  const ul = el('ul','points');
+  m.points.forEach(p => ul.appendChild(el('li', null, p)));
+  body.appendChild(ul);
+  card.appendChild(body);
+  if(m.svg){
+    card.appendChild(el('div','module-fig', m.svg));
+  }
+  if(m.callout){
+    card.appendChild(el('div','callout', m.callout));
+  }
+  card.appendChild(footer(true, 'Continue \u2192', ()=>goTo(current+1), ()=>goTo(current-1)));
+}
+
+// ---------- KNOWLEDGE CHECK ----------
+function renderKC(card, mi, ki){
+  const m = COURSE.modules[mi];
+  const kc = m.kcs[ki];
+  const key = mi+'-'+ki;
+  if(!kcState[key]) kcState[key] = {selected:null, submitted:false, correctFirstTry:null};
+  const st = kcState[key];
+
+  const totalKC = totalKCCount();
+  const kcNumber = COURSE.modules.slice(0,mi).reduce((n,mm)=>n+mm.kcs.length,0) + ki + 1;
+
+  card.appendChild(el('div','kc-badge sans', '\u2713 KNOWLEDGE CHECK ' + kcNumber + ' OF ' + totalKC));
+  card.appendChild(el('div','kc-question', kc.question));
+
+  const optWrap = el('div','options');
+  kc.options.forEach((opt, oi) => {
+    const btn = el('button','option sans');
+    btn.type = 'button';
+    const letter = el('span','letter', String.fromCharCode(65+oi));
+    btn.appendChild(letter);
+    btn.appendChild(el('span', null, opt));
+    if(st.submitted){
+      btn.disabled = true;
+      btn.classList.add('locked');
+      if(oi === kc.correctIndex) btn.classList.add('correct');
+      else if(oi === st.selected) btn.classList.add('incorrect');
+    } else {
+      if(st.selected === oi) btn.classList.add('selected');
+      btn.addEventListener('click', ()=>{ st.selected = oi; render(); });
+    }
+    optWrap.appendChild(btn);
+  });
+  card.appendChild(optWrap);
+
+  const fb = el('div','feedback');
+  if(st.submitted){
+    const isCorrect = st.selected === kc.correctIndex;
+    fb.classList.add('show', isCorrect ? 'correct-fb' : 'incorrect-fb');
+    fb.innerHTML = '<b>'+(isCorrect ? 'Correct.' : 'Not quite.')+'</b>' + kc.explanation;
+  }
+  card.appendChild(fb);
+
+  const footWrap = el('div','card-footer');
+  const back = el('button','btn btn-ghost sans','\u2190 Back');
+  back.addEventListener('click', ()=>goTo(current-1));
+  footWrap.appendChild(back);
+
+  if(!st.submitted){
+    const submit = el('button','btn btn-primary sans','Submit Answer');
+    submit.disabled = st.selected === null;
+    submit.addEventListener('click', ()=>{
+      st.submitted = true;
+      if(st.correctFirstTry === null) st.correctFirstTry = (st.selected === kc.correctIndex);
+      render();
+    });
+    footWrap.appendChild(submit);
+  } else if(st.selected !== kc.correctIndex){
+    const retry = el('button','btn btn-primary sans','Try Again');
+    retry.addEventListener('click', ()=>{ st.submitted=false; st.selected=null; render(); });
+    footWrap.appendChild(retry);
+  } else {
+    const cont = el('button','btn btn-primary sans','Continue \u2192');
+    cont.addEventListener('click', ()=>goTo(current+1));
+    footWrap.appendChild(cont);
+  }
+  card.appendChild(footWrap);
+}
+
+// ---------- SUMMARY ----------
+function renderSummary(card){
+  const preScore = pretestAnswers.reduce((n,a,i)=> n + (a === PRE_BANK[i].correctIndex ? 1 : 0), 0);
+  const postScore = posttestAnswers.reduce((n,a,i)=> n + (a === POST_BANK[i].correctIndex ? 1 : 0), 0);
+  const totalKC = totalKCCount();
+  let kcCorrect = 0;
+  Object.values(kcState).forEach(s => { if(s.correctFirstTry) kcCorrect++; });
+  const delta = postScore - preScore;
+
+  card.appendChild(el('div','complete-icon', '\u2713'));
+  card.appendChild(el('div','kicker', COURSE.courseCode + ' COMPLETE'));
+  card.appendChild(el('h1','slide-title', 'Nice work.'));
+  const body = el('div','body-text');
+  body.appendChild(el('p', null, "You've completed " + COURSE.courseTitle + ' — pre-assessment, all modules and knowledge checks, and the post-assessment.'));
+  card.appendChild(body);
+
+  const scoreBox = el('div','score-box');
+  const items = [
+    [preScore + '/' + PRE_BANK.length, 'Pre-assessment'],
+    [postScore + '/' + POST_BANK.length, 'Post-assessment'],
+    [kcCorrect + '/' + totalKC, 'Knowledge checks (first try)']
+  ];
+  items.forEach(([num,label])=>{
+    const s = el('div');
+    s.appendChild(el('div','score-num', num));
+    s.appendChild(el('div','score-label sans', label));
+    scoreBox.appendChild(s);
+  });
+  card.appendChild(scoreBox);
+
+  let deltaMsg;
+  if(delta > 0) deltaMsg = 'You improved by ' + delta + ' question' + (delta===1?'':'s') + ' from pre- to post-assessment.';
+  else if(delta === 0) deltaMsg = 'You matched your pre-assessment score — solid baseline retention.';
+  else deltaMsg = "Your post-assessment score came in lower than your pre-assessment. Worth a second pass through this course before moving on.";
+  card.appendChild(el('div','callout', deltaMsg));
+
+  if(COURSE.leadsTo){
+    const next = el('div','body-text');
+    next.style.marginTop = '18px';
+    next.appendChild(el('p', null, '<b>Next up:</b> ' + COURSE.leadsTo));
+    card.appendChild(next);
+  }
+
+  const footWrap = el('div','card-footer');
+  const back = el('button','btn btn-ghost sans','\u2190 Review');
+  back.addEventListener('click', ()=>goTo(current-1));
+  footWrap.appendChild(back);
+  const restart = el('button','btn btn-primary sans','Restart Course');
+  restart.addEventListener('click', ()=>{
+    Object.keys(kcState).forEach(k=>delete kcState[k]);
+    for(let i=0;i<pretestAnswers.length;i++) pretestAnswers[i]=null;
+    for(let i=0;i<posttestAnswers.length;i++) posttestAnswers[i]=null;
+    goTo(0);
+  });
+  footWrap.appendChild(restart);
+  card.appendChild(footWrap);
+}
+
+render();
+</script>
+</body>
+</html>
